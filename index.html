@@ -3,64 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ethiopia Ads Earn</title>
+    <title>Ethio Ads - Admin Panel</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; text-align: center; }
-        .card { background: white; margin: 15px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .btn { background-color: #1a73e8; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 16px; width: 100%; margin-top: 10px; }
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; }
-        .nav-item { cursor: pointer; color: #555; font-size: 14px; }
-        .nav-item.active { color: #1a73e8; font-weight: bold; }
-        #ref-link { background: #eee; padding: 15px; border-radius: 10px; word-break: break-all; margin-top: 10px; font-weight: bold; color: #1a73e8; }
+        /* ፓስወርድ እስኪረጋገጥ ገጹ እንዳይታይ ተደብቋል */
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; padding: 20px; display: none; } 
+        .container { max-width: 800px; margin: auto; }
+        .card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { color: #1a73e8; text-align: center; border-bottom: 2px solid #1a73e8; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #1a73e8; color: white; }
+        button { background: #d93025; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div id="tab-home" class="tab-content active">
-        <div class="card">
-            <h2>እንኳን ደህና መጡ!</h2>
-            <p>የአሁኑ ባላንስዎ፦ <span id="balance" style="font-size: 24px; color: green; font-weight: bold;">0.00</span> ETB</p>
-            <button class="btn" onclick="alert('ማስታወቂያ በአሁኑ ሰዓት የለም!')">ማስታወቂያ እይ</button>
+<div class="container">
+    <h1>የአድሚን መቆጣጠሪያ 🔐</h1>
+
+    <div class="card">
+        <h2>💰 የክፍያ ጥያቄዎች (Withdraw Requests)</h2>
+        <div style="overflow-x:auto;">
+            <table>
+                <thead>
+                    <tr><th>ስም</th><th>ስልክ</th><th>መጠን (ETB)</th><th>እርምጃ</th></tr>
+                </thead>
+                <tbody id="withdrawList"></tbody>
+            </table>
         </div>
     </div>
 
-    <div id="tab-invite" class="tab-content">
-        <div class="card">
-            <h3>ጓደኞችን ይጋብዙ</h3>
-            <p>ለእያንዳንዱ የተጋበዘ ሰው 1.00 ETB ያገኛሉ።</p>
-            <div id="ref-link">ሊንኩ እየተዘጋጀ ነው...</div>
-            <button class="btn" onclick="copyRef()">ሊንኩን ኮፒ አድርግ</button>
+    <div class="card">
+        <h2>👥 የተመዘገቡ ተጠቃሚዎች</h2>
+        <div style="overflow-x:auto;">
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>ባላንስ (ETB)</th></tr>
+                </thead>
+                <tbody id="usersList"></tbody>
+            </table>
         </div>
     </div>
-
-    <div id="tab-wallet" class="tab-content">
-        <div class="card">
-            <h3>ብር ማውጫ</h3>
-            <input type="text" id="w-name" placeholder="ሙሉ ስም" style="width:90%; padding:10px; margin-top:10px; border-radius:5px; border:1px solid #ddd;">
-            <input type="number" id="w-phone" placeholder="ስልክ ቁጥር" style="width:90%; padding:10px; margin-top:10px; border-radius:5px; border:1px solid #ddd;">
-            <input type="number" id="w-amount" placeholder="የብር መጠን" style="width:90%; padding:10px; margin-top:10px; border-radius:5px; border:1px solid #ddd;">
-            <button class="btn" onclick="handleWithdraw()">ብር አውጣ (Withdraw)</button>
-        </div>
-    </div>
-
-    <div class="nav-bar">
-        <div class="nav-item active" onclick="switchTab('tab-home', this)">መነሻ</div>
-        <div class="nav-item" onclick="switchTab('tab-invite', this)">ጋብዝ</div>
-        <div class="nav-item" onclick="switchTab('tab-wallet', this)">ዋሌት</div>
-    </div>
+</div>
 
 <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-    const user_id = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "Unknown";
-    const bot_username = "ethio_ads_58_bot";
+    // 1. ፓስወርድ ማረጋገጫ (አዲሱ ፓስወርድህ እዚህ አለ)
+    const myPassword = "070322"; 
+    const entry = prompt("የአድሚን ፓስወርድ ያስገቡ:");
 
-    // Firebase Config
+    if (entry === myPassword) {
+        document.body.style.display = "block"; // ትክክል ከሆነ ገጹን አሳይ
+    } else {
+        alert("የተሳሳተ ፓስወርድ! መግባት አይችሉም።");
+        window.location.href = "index.html"; // ወደ ዋናው ገጽ መልሰው
+    }
+
+    // 2. ያንተ Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyCg7-ixJaGiJlpi6qav1dTQUmr3K7Ccrpo",
         authDomain: "ethiopia-ads-earn.firebaseapp.com",
@@ -70,42 +70,45 @@
         messagingSenderId: "428629596077",
         appId: "1:428629596077:web:67e7227814bd60cc413324"
     };
+
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // Invite Link
-    const myInviteLink = `https://t.me/${bot_username}?start=${user_id}`;
-    document.getElementById('ref-link').innerText = myInviteLink;
-
-    // Balance Listener
-    database.ref('users/' + user_id).on('value', (snapshot) => {
-        const data = snapshot.val();
-        document.getElementById('balance').innerText = (data && data.balance) ? data.balance.toFixed(2) : "0.00";
+    // መረጃዎችን ከዳታቤዝ ማምጣት
+    database.ref('withdraw_requests').on('value', (snapshot) => {
+        const list = document.getElementById('withdrawList');
+        list.innerHTML = "";
+        snapshot.forEach((childSnapshot) => {
+            const data = childSnapshot.val();
+            list.innerHTML += `
+                <tr>
+                    <td>${data.name}</td>
+                    <td>${data.phone}</td>
+                    <td>${data.amount} ETB</td>
+                    <td><button onclick="deleteReq('${childSnapshot.key}')">አጥፋ</button></td>
+                </tr>`;
+        });
+        if (list.innerHTML === "") list.innerHTML = "<tr><td colspan='4' style='text-align:center;'>ምንም ጥያቄ የለም</td></tr>";
     });
 
-    function switchTab(tabId, el) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        el.classList.add('active');
-    }
-
-    function copyRef() {
-        const link = document.getElementById('ref-link').innerText;
-        navigator.clipboard.writeText(link).then(() => {
-            alert("የመጋበዣ ሊንክዎ ኮፒ ተደርጓል!");
+    database.ref('users').on('value', (snapshot) => {
+        const list = document.getElementById('usersList');
+        list.innerHTML = "";
+        snapshot.forEach((childSnapshot) => {
+            const data = childSnapshot.val();
+            list.innerHTML += `
+                <tr>
+                    <td><code>${childSnapshot.key}</code></td>
+                    <td>${data.balance || 0} ETB</td>
+                </tr>`;
         });
-    }
+        if (list.innerHTML === "") list.innerHTML = "<tr><td colspan='2' style='text-align:center;'>ተጠቃሚ የለም</td></tr>";
+    });
 
-    function handleWithdraw() {
-        const name = document.getElementById('w-name').value;
-        const phone = document.getElementById('w-phone').value;
-        const amount = document.getElementById('w-amount').value;
-        if(!name || !phone || !amount) { alert("መረጃዎችን በትክክል ይሙሉ!"); return; }
-
-        database.ref('withdraw_requests').push({
-            userId: user_id, name, phone, amount, time: Date.now()
-        }).then(() => alert("ጥያቄዎ ተልኳል!"));
+    function deleteReq(id) {
+        if(confirm("ይህ ሰው መከፈሉን እርግጠኛ ነህ? መረጃው ይሰረዛል።")) {
+            database.ref('withdraw_requests/' + id).remove();
+        }
     }
 </script>
 </body>
