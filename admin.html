@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethio Ads - Admin Panel</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        /* ፓስወርድ እስኪረጋገጥ ገጹ እንዳይታይ ተደብቋል */
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; padding: 20px; display: none; } 
+        .container { max-width: 800px; margin: auto; }
+        .card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { color: #1a73e8; text-align: center; border-bottom: 2px solid #1a73e8; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #1a73e8; color: white; }
+        button { background: #d93025; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>የአድሚን መቆጣጠሪያ 🔐</h1>
+
+    <div class="card">
+        <h2>💰 የክፍያ ጥያቄዎች (Withdraw Requests)</h2>
+        <div style="overflow-x:auto;">
+            <table>
+                <thead>
+                    <tr><th>ስም</th><th>ስልክ</th><th>መጠን (ETB)</th><th>እርምጃ</th></tr>
+                </thead>
+                <tbody id="withdrawList"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>👥 የተመዘገቡ ተጠቃሚዎች</h2>
+        <div style="overflow-x:auto;">
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>ባላንስ (ETB)</th></tr>
+                </thead>
+                <tbody id="usersList"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. ፓስወርድ ማረጋገጫ (አዲሱ ፓስወርድህ እዚህ አለ)
+    const myPassword = "070322"; 
+    const entry = prompt("የአድሚን ፓስወርድ ያስገቡ:");
+
+    if (entry === myPassword) {
+        document.body.style.display = "block"; // ትክክል ከሆነ ገጹን አሳይ
+    } else {
+        alert("የተሳሳተ ፓስወርድ! መግባት አይችሉም።");
+        window.location.href = "index.html"; // ወደ ዋናው ገጽ መልሰው
+    }
+
+    // 2. ያንተ Firebase Config
+    const firebaseConfig = {
+        apiKey: "AIzaSyCg7-ixJaGiJlpi6qav1dTQUmr3K7Ccrpo",
+        authDomain: "ethiopia-ads-earn.firebaseapp.com",
+        databaseURL: "https://ethiopia-ads-earn-default-rtdb.firebaseio.com",
+        projectId: "ethiopia-ads-earn",
+        storageBucket: "ethiopia-ads-earn.firebasestorage.app",
+        messagingSenderId: "428629596077",
+        appId: "1:428629596077:web:67e7227814bd60cc413324"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // መረጃዎችን ከዳታቤዝ ማምጣት
+    database.ref('withdraw_requests').on('value', (snapshot) => {
+        const list = document.getElementById('withdrawList');
+        list.innerHTML = "";
+        snapshot.forEach((childSnapshot) => {
+            const data = childSnapshot.val();
+            list.innerHTML += `
+                <tr>
+                    <td>${data.name}</td>
+                    <td>${data.phone}</td>
+                    <td>${data.amount} ETB</td>
+                    <td><button onclick="deleteReq('${childSnapshot.key}')">አጥፋ</button></td>
+                </tr>`;
+        });
+        if (list.innerHTML === "") list.innerHTML = "<tr><td colspan='4' style='text-align:center;'>ምንም ጥያቄ የለም</td></tr>";
+    });
+
+    database.ref('users').on('value', (snapshot) => {
+        const list = document.getElementById('usersList');
+        list.innerHTML = "";
+        snapshot.forEach((childSnapshot) => {
+            const data = childSnapshot.val();
+            list.innerHTML += `
+                <tr>
+                    <td><code>${childSnapshot.key}</code></td>
+                    <td>${data.balance || 0} ETB</td>
+                </tr>`;
+        });
+        if (list.innerHTML === "") list.innerHTML = "<tr><td colspan='2' style='text-align:center;'>ተጠቃሚ የለም</td></tr>";
+    });
+
+    function deleteReq(id) {
+        if(confirm("ይህ ሰው መከፈሉን እርግጠኛ ነህ? መረጃው ይሰረዛል።")) {
+            database.ref('withdraw_requests/' + id).remove();
+        }
+    }
+</script>
+</body>
+</html>
