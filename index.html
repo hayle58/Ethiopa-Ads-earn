@@ -3,113 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ethio Ads - Admin Panel</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <title>Earn Money Ethiopia</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
     <style>
-        /* ፓስወርድ እስኪረጋገጥ ገጹ እንዳይታይ ተደብቋል */
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; padding: 20px; display: none; } 
-        .container { max-width: 800px; margin: auto; }
-        .card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1 { color: #1a73e8; text-align: center; border-bottom: 2px solid #1a73e8; padding-bottom: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background: #1a73e8; color: white; }
-        button { background: #d93025; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+        :root { --p-color: #0088cc; --bg: #f4f7f9; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; color: #333; overflow-x: hidden; }
+        .header { background: linear-gradient(135deg, #0088cc, #004466); color: white; padding: 30px 20px; text-align: center; border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .balance-val { font-size: 38px; font-weight: 800; margin: 10px 0; }
+        .main-container { padding: 15px; margin-bottom: 90px; }
+        .card { background: white; border-radius: 18px; padding: 20px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.03); }
+        .btn { background: var(--p-color); color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        .btn:active { transform: scale(0.97); }
+        .btn-task { background: #ff9800; margin-bottom: 10px; }
+        .nav-bar { position: fixed; bottom: 15px; width: 90%; left: 5%; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); z-index: 100; }
+        .nav-item { font-size: 12px; text-align: center; color: #777; font-weight: 600; flex: 1; }
+        .nav-item.active { color: var(--p-color); }
+        .tab-content { display: none; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .active-tab { display: block; }
+        input, select { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; margin-top: 8px; font-size: 15px; }
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .stat-card { background: #fff; padding: 12px; border-radius: 12px; text-align: center; border: 1px solid #eee; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>የአድሚን መቆጣጠሪያ 🔐</h1>
+    <div class="header">
+        <div style="font-size: 14px; opacity: 0.9;">ጠቅላላ ቀሪ ሂሳብ</div>
+        <div class="balance-val"><span id="u-balance">0.00</span> <small style="font-size: 18px;">ETB</small></div>
+    </div>
 
-    <div class="card">
-        <h2>💰 የክፍያ ጥያቄዎች (Withdraw Requests)</h2>
-        <div style="overflow-x:auto;">
-            <table>
-                <thead>
-                    <tr><th>ስም</th><th>ስልክ</th><th>መጠን (ETB)</th><th>እርምጃ</th></tr>
-                </thead>
-                <tbody id="withdrawList"></tbody>
-            </table>
+    <div class="main-container">
+        <div id="tab-home" class="tab-content active-tab">
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div style="color: #0088cc; font-weight: bold;" id="u-ads">0/50</div>
+                    <div style="font-size: 11px;">የዛሬ Ads</div>
+                </div>
+                <div class="stat-card">
+                    <div style="color: #ff9800; font-weight: bold;" id="u-inv">0/5</div>
+                    <div style="font-size: 11px;">ሪፈራል (Min: 5)</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-top:0;">Ads Center</h3>
+                <p style="font-size: 13px; color: #666;">ማስታወቂያዎችን በማየት በየቀኑ 10 ብር ይስሩ።</p>
+                <button class="btn" onclick="watchAd()">ማስታወቂያ እይ (0.20 ETB)</button>
+            </div>
+            
+            <div class="card">
+                <h3>Tasks</h3>
+                <button class="btn btn-task" onclick="window.open('https://t.me/EarnChannalebot', '_blank')">ቻናል ተቀላቀል</button>
+                <button class="btn" style="background:#4caf50;" onclick="verifyTask()">አረጋግጥ (0.50 ETB)</button>
+            </div>
+
+            <div class="card">
+                <h3>Promo Code</h3>
+                <input type="text" id="promo-input" placeholder="ኮድ ያስገቡ...">
+                <button class="btn" style="background:#333;" onclick="applyPromo()">Apply Code</button>
+            </div>
+        </div>
+
+        <div id="tab-wallet" class="tab-content">
+            <div class="card">
+                <h3>ገንዘብ ማውጫ</h3>
+                <select id="w-method" onchange="updateLimitLabel()">
+                    <option value="telebirr">Telebirr (30 - 50 ETB)</option>
+                    <option value="cbe">CBE Birr (150 - 200 ETB)</option>
+                </select>
+                <input type="text" id="w-name" placeholder="ሙሉ ስም">
+                <input type="number" id="w-acc" placeholder="አካውንት / ስልክ ቁጥር">
+                <input type="number" id="w-amount" placeholder="የገንዘብ መጠን">
+                <p id="limit-label" style="font-size: 12px; color: #e74c3c; font-weight: bold; margin-top: 10px;">ገደብ፡ 30 - 50 ETB</p>
+                <button class="btn" onclick="handleWithdraw()">Withdraw መጠየቂያ</button>
+            </div>
+        </div>
+
+        <div id="tab-invite" class="tab-content">
+            <div class="card">
+                <h3>ጓደኞችን ይጋብዙ</h3>
+                <p style="font-size: 14px;">ለእያንዳንዱ ሰው 1.00 ETB ያግኙ።</p>
+                <div id="ref-link" style="background:#f0f0f0; padding:15px; border-radius:10px; font-size:12px; word-break: break-all; border: 1px dashed #ccc;">
+                    https://t.me/YourBot?start=user_id
+                </div>
+                <button class="btn" style="margin-top:15px;" onclick="copyRef()">ሊንኩን ኮፒ አድርግ</button>
+            </div>
         </div>
     </div>
 
-    <div class="card">
-        <h2>👥 የተመዘገቡ ተጠቃሚዎች</h2>
-        <div style="overflow-x:auto;">
-            <table>
-                <thead>
-                    <tr><th>ID</th><th>ባላንስ (ETB)</th></tr>
-                </thead>
-                <tbody id="usersList"></tbody>
-            </table>
-        </div>
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="switchTab('tab-home', this)">Ads</div>
+        <div class="nav-item" onclick="switchTab('tab-invite', this)">Invite</div>
+        <div class="nav-item" onclick="switchTab('tab-wallet', this)">Wallet</div>
+        <div class="nav-item" onclick="window.open('https://t.me/EarnChannalebot', '_blank')">Bonus</div>
     </div>
-</div>
 
-<script>
-    // 1. ፓስወርድ ማረጋገጫ (አዲሱ ፓስወርድህ እዚህ አለ)
-    const myPassword = "070322"; 
-    const entry = prompt("የአድሚን ፓስወርድ ያስገቡ:");
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.headerColor = '#0088cc';
 
-    if (entry === myPassword) {
-        document.body.style.display = "block"; // ትክክል ከሆነ ገጹን አሳይ
-    } else {
-        alert("የተሳሳተ ፓስወርድ! መግባት አይችሉም።");
-        window.location.href = "index.html"; // ወደ ዋናው ገጽ መልሰው
-    }
+        // --- Firebase Configuration (ቁልፎችህ ገብተዋል) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCg7-ixJaGiJlpi6qav1dTQUmr3K7Ccrpo",
+            authDomain: "ethiopia-ads-earn.firebaseapp.com",
+            databaseURL: "https://ethiopia-ads-earn-default-rtdb.firebaseio.com",
+            projectId: "ethiopia-ads-earn",
+            storageBucket: "ethiopia-ads-earn.firebasestorage.app",
+            messagingSenderId: "428629596077",
+            appId: "1:428629596077:web:67e7227814bd60cc413324"
+        };
 
-    // 2. ያንተ Firebase Config
-    const firebaseConfig = {
-        apiKey: "AIzaSyCg7-ixJaGiJlpi6qav1dTQUmr3K7Ccrpo",
-        authDomain: "ethiopia-ads-earn.firebaseapp.com",
-        databaseURL: "https://ethiopia-ads-earn-default-rtdb.firebaseio.com",
-        projectId: "ethiopia-ads-earn",
-        storageBucket: "ethiopia-ads-earn.firebasestorage.app",
-        messagingSenderId: "428629596077",
-        appId: "1:428629596077:web:67e7227814bd60cc413324"
-    };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const uid = tg.initDataUnsafe.user?.id || "test_user";
 
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+        let user = { balance: 0, adsToday: 0, invites: 0, lastWithdrawDate: "", taskDone: false, lastResetDate: "" };
 
-    // መረጃዎችን ከዳታቤዝ ማምጣት
-    database.ref('withdraw_requests').on('value', (snapshot) => {
-        const list = document.getElementById('withdrawList');
-        list.innerHTML = "";
-        snapshot.forEach((childSnapshot) => {
-            const data = childSnapshot.val();
-            list.innerHTML += `
-                <tr>
-                    <td>${data.name}</td>
-                    <td>${data.phone}</td>
-                    <td>${data.amount} ETB</td>
-                    <td><button onclick="deleteReq('${childSnapshot.key}')">አጥፋ</button></td>
-                </tr>`;
+        // Real-time Sync with Database
+        db.ref('users/' + uid).on('value', (snap) => {
+            if(snap.exists()) {
+                user = snap.val();
+                updateUI();
+                checkDailyReset();
+            } else {
+                db.ref('users/' + uid).set(user);
+            }
         });
-        if (list.innerHTML === "") list.innerHTML = "<tr><td colspan='4' style='text-align:center;'>ምንም ጥያቄ የለም</td></tr>";
-    });
 
-    database.ref('users').on('value', (snapshot) => {
-        const list = document.getElementById('usersList');
-        list.innerHTML = "";
-        snapshot.forEach((childSnapshot) => {
-            const data = childSnapshot.val();
-            list.innerHTML += `
-                <tr>
-                    <td><code>${childSnapshot.key}</code></td>
-                    <td>${data.balance || 0} ETB</td>
-                </tr>`;
-        });
-        if (list.innerHTML === "") list.innerHTML = "<tr><td colspan='2' style='text-align:center;'>ተጠቃሚ የለም</td></tr>";
-    });
-
-    function deleteReq(id) {
-        if(confirm("ይህ ሰው መከፈሉን እርግጠኛ ነህ? መረጃው ይሰረዛል።")) {
-            database.ref('withdraw_requests/' + id).remove();
+        function updateUI() {
+            document.getElementById('u-balance').innerText = user.balance.toFixed(2);
+            document.getElementById('u-ads').innerText = user.adsToday + "/50";
+            document.getElementById('u-inv').innerText = (user.invites || 0) + "/5";
+            document.getElementById('ref-link').innerText = "https://t.me/EarnChannalebot?start=" + uid;
         }
-    }
-</script>
+
+        // 9:00 AM Reset Logic (3:00 AM Server Time)
+        function checkDailyReset() {
+            const now = new Date();
+            const todayStr = now.toDateString();
+            if (now.getHours() >= 3 && user.lastResetDate !== todayStr) {
+                user.adsToday = 0;
+                user.lastResetDate = todayStr;
+                db.ref('users/' + uid).update({ adsToday: 0, lastResetDate: todayStr });
+                db.ref('system/dailyTotalPaid').set(0); // System-wide reset
+            }
+        }
+
+        function watchAd() {
+            if(user.adsToday >= 50) return tg.showAlert("የዛሬውን ገደብ (50 Ads) ጨርሰዋል!");
+            
+            tg.showConfirm("ማስታወቂያውን ለማየት 'Ok' ይበሉ (5 ሰከንድ)", (ok) => {
+                if(ok) {
+                    tg.MainButton.setText("Ads Loading...");
+                    tg.MainButton.show();
+                    setTimeout(() => {
+                        user.balance += 0.20;
+                        user.adsToday += 1;
+                        db.ref('users/' + uid).update(user);
+                        tg.MainButton.hide();
+                        tg.HapticFeedback.notificationOccurred('success');
+                    }, 5000);
+                }
+            });
+        }
+
+        function verifyTask() {
+            if(user.taskDone) return tg.showAlert("ይህን ታስክ ቀድመው ሰርተዋል!");
+            tg.showConfirm("ቻናሉን በትክክል ተቀላቅለዋል?", (ok) => {
+                if(ok) {
+                    user.balance += 0.50;
+                    user.taskDone = true;
+                    db.ref('users/' + uid).update(user);
+                    tg.showAlert("ተረጋግጧል! 0.50 ETB ተጨምሯል።");
+                }
+            });
+        }
+
+        function handleWithdraw() {
+            const method = document.getElementById('w-method').value;
+            const amount = parseFloat(document.getElementById('w-amount').value);
+            const today = new Date().toDateString();
+
+            if ((user.invites || 0) < 5) return tg.showAlert("ገንዘብ ለማውጣት ቢያንስ 5 ሰዎችን መጋበዝ አለብዎት!");
+            if (user.lastWithdrawDate === today) return tg.showAlert("በቀን አንድ ጊዜ ብቻ ማውጣት ይችላሉ!");
+            
+            let min = method === 'telebirr' ? 30 : 150;
+            let max = method === 'telebirr' ? 50 : 200;
+
+            if (isNaN(amount) || amount < min || amount > max) return tg.showAlert(`የ ${method} ገደብ ${min} - ${max} ETB ነው!`);
+            if (amount > user.balance) return tg.showAlert("በቂ ሂሳብ የለዎትም!");
+
+            db.ref('system/dailyTotalPaid').get().then((snap) => {
+                let currentPaid = snap.val() || 0;
+                if (currentPaid + amount > 300) return tg.showAlert("ይቅርታ፣ የዛሬው የሲስተም ክፍያ ገደብ (300 ETB) አልቋል። ነገ ይሞክሩ።");
+
+                user.balance -= amount;
+                user.lastWithdrawDate = today;
+                db.ref('users/' + uid).update(user);
+                db.ref('system/dailyTotalPaid').set(currentPaid + amount);
+                db.ref('withdraw_requests').push({
+                    uid, amount, method, 
+                    name: document.getElementById('w-name').value, 
+                    acc: document.getElementById('w-acc').value,
+                    time: new Date().toLocaleString()
+                });
+                tg.showAlert("ጥያቄዎ ተልኳል! በ24 ሰአት ውስጥ ይከፈላል።");
+            });
+        }
+
+        function applyPromo() {
+            const code = document.getElementById('promo-input').value;
+            if(code === "ETHIO2026") { 
+                user.balance += 5;
+                db.ref('users/' + uid).update(user);
+                tg.showAlert("የ 5 ብር ቦነስ አግኝተዋል!");
+                document.getElementById('promo-input').value = "";
+            } else {
+                tg.showAlert("የተሳሳተ ኮድ!");
+            }
+        }
+
+        function switchTab(id, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(id).classList.add('active-tab');
+            el.classList.add('active');
+        }
+
+        function updateLimitLabel() {
+            const m = document.getElementById('w-method').value;
+            document.getElementById('limit-label').innerText = m === 'telebirr' ? "ገደብ፡ 30 - 50 ETB" : "ገደብ፡ 150 - 200 ETB";
+        }
+
+        function copyRef() {
+            const link = document.getElementById('ref-link').innerText;
+            navigator.clipboard.writeText(link);
+            tg.showAlert("ሊንኩ ተገልብጧል! ለጓደኞችዎ ይላኩ።");
+        }
+    </script>
 </body>
 </html>
