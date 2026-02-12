@@ -11,7 +11,7 @@
         :root { --sidebar-bg: #f8f9fa; --active-blue: #0d6efd; --text-dark: #333; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; background-color: #f0f2f5; color: var(--text-dark); height: 100vh; overflow: hidden; }
 
-        /* Sidebar Styling */
+        /* Sidebar Styling - ሳይቀየር የቀጠለ */
         .sidebar { width: 240px; background: var(--sidebar-bg); height: 100vh; border-right: 1px solid #ddd; padding-top: 20px; flex-shrink: 0; }
         .sidebar-brand { padding: 0 20px 20px; font-weight: bold; font-size: 20px; display: flex; align-items: center; }
         .sidebar-brand i { margin-right: 10px; color: var(--active-blue); }
@@ -28,24 +28,21 @@
 
         .dashboard-header { margin-bottom: 25px; font-size: 22px; font-weight: 600; }
 
-        /* Stats Grid */
+        /* Stats Grid - Ads Income ካርድ ተካቷል */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
         .stat-card { background: white; padding: 20px; border-radius: 12px; display: flex; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .stat-icon { width: 55px; height: 55px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; margin-right: 15px; }
         .stat-info h4 { margin: 0; font-size: 14px; color: #777; font-weight: normal; }
         .stat-info div { font-size: 24px; font-weight: bold; margin-top: 5px; }
 
-        .bg-blue { background: #4e73df; } .bg-green { background: #1cc88a; } .bg-orange { background: #f6c23e; } .bg-purple { background: #6f42c1; }
+        .bg-blue { background: #4e73df; } .bg-cyan { background: #36b9cc; } .bg-orange { background: #f6c23e; } .bg-purple { background: #6f42c1; }
 
-        /* Table Styling */
+        /* Tables & Forms */
         .list-container { background: white; margin-top: 20px; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th { text-align: left; padding: 12px; border-bottom: 2px solid #eee; background: #fafafa; }
         td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
-
-        /* Forms */
-        .form-group { margin-bottom: 15px; }
-        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin: 10px 0; box-sizing: border-box; }
         .btn { background: var(--active-blue); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
@@ -66,6 +63,7 @@
             <div class="dashboard-header">Dashboard Overview</div>
             <div class="stats-grid">
                 <div class="stat-card"><div class="stat-icon bg-blue"><i class="fas fa-users"></i></div><div class="stat-info"><h4>Total Users</h4><div id="total-users">0</div></div></div>
+                <div class="stat-card"><div class="stat-icon bg-cyan"><i class="fas fa-ad"></i></div><div class="stat-info"><h4>Ads Income</h4><div id="ads-income">0.00</div></div></div>
                 <div class="stat-card"><div class="stat-icon bg-orange"><i class="fas fa-hourglass-half"></i></div><div class="stat-info"><h4>Pending</h4><div id="pending-count">0</div></div></div>
                 <div class="stat-card"><div class="stat-icon bg-purple"><i class="fas fa-chart-line"></i></div><div class="stat-info"><h4>Total Balance</h4><div id="total-balance">0.00</div></div></div>
             </div>
@@ -86,7 +84,7 @@
             <div class="dashboard-header">Pending Withdrawals</div>
             <div class="list-container">
                 <table>
-                    <thead><tr><th>Name</th><th>Phone</th><th>Amount</th><th>Method</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Name</th><th>Phone/Acc</th><th>Amount</th><th>Method</th><th>Action</th></tr></thead>
                     <tbody id="pending-list"></tbody>
                 </table>
             </div>
@@ -95,21 +93,21 @@
         <div id="broadcast" class="section">
             <div class="dashboard-header">Send Notification</div>
             <div class="list-container">
-                <div class="form-group">
-                    <label>የመልዕክት ርዕስ</label><input type="text" id="msg-title" placeholder="ርዕስ...">
-                </div>
-                <div class="form-group">
-                    <label>መልዕክት</label><textarea id="msg-body" rows="4" placeholder="መልዕክቱን እዚህ ይጻፉ..."></textarea>
-                </div>
+                <label>ርዕስ</label><input type="text" id="msg-title" placeholder="ርዕስ...">
+                <label>መልዕክት</label><textarea id="msg-body" rows="4" placeholder="መልዕክቱን እዚህ ይጻፉ..."></textarea>
                 <button class="btn" onclick="sendBroadcast()">መልዕክት ላክ (Broadcast)</button>
             </div>
         </div>
 
         <div id="settings" class="section">
-            <div class="dashboard-header">App Settings</div>
+            <div class="dashboard-header">App Settings & Payments</div>
             <div class="list-container">
-                <div class="form-group">
-                    <label>የእለታዊ ክፍያ ገደብ (Daily Limit)</label>
+                <div style="margin-bottom: 20px;">
+                    <label><strong>TON Wallet Address (Adsgram Payment)</strong></label>
+                    <input type="text" id="ton-wallet" placeholder="የእርስዎን TON Wallet አድራሻ ያስገቡ...">
+                </div>
+                <div>
+                    <label><strong>Daily Withdrawal Limit (ETB)</strong></label>
                     <input type="number" id="setting-limit" value="300">
                 </div>
                 <button class="btn" onclick="saveSettings()">Save Settings</button>
@@ -138,10 +136,10 @@
             el.classList.add('active');
         }
 
-        // Dashboard & Users Sync
+        // Stats & Users Sync
         db.ref('users').on('value', (snap) => {
             const data = snap.val();
-            let totalUsers = 0; let totalBal = 0;
+            let totalUsers = 0, totalBal = 0, adsInc = 0;
             const userTable = document.getElementById('all-users-list');
             userTable.innerHTML = "";
 
@@ -149,15 +147,17 @@
                 Object.keys(data).forEach(uid => {
                     totalUsers++;
                     totalBal += data[uid].balance || 0;
+                    adsInc += (data[uid].adsToday || 0) * 0.45; // ማስታወቂያ ገቢ ስሌት
                     userTable.innerHTML += `<tr><td>${uid}</td><td>${data[uid].balance.toFixed(2)} ETB</td>
-                    <td><button onclick="editUser('${uid}')">Edit</button></td></tr>`;
+                    <td><button class="btn" onclick="editUser('${uid}')">Edit</button></td></tr>`;
                 });
             }
             document.getElementById('total-users').innerText = totalUsers;
             document.getElementById('total-balance').innerText = totalBal.toFixed(2);
+            document.getElementById('ads-income').innerText = adsInc.toFixed(2);
         });
 
-        // Withdrawals Sync
+        // Withdrawal Requests Sync
         db.ref('withdraw_requests').on('value', (snap) => {
             const reqs = snap.val();
             const list = document.getElementById('pending-list');
@@ -167,7 +167,7 @@
                 Object.keys(reqs).forEach(key => {
                     count++;
                     const r = reqs[key];
-                    list.innerHTML += `<tr><td>${r.name}</td><td>${r.phone || r.acc}</td><td>${r.amount} ETB</td><td>${r.method}</td>
+                    list.innerHTML += `<tr><td>${r.name}</td><td>${r.acc || r.phone}</td><td>${r.amount} ETB</td><td>${r.method}</td>
                     <td><button class="btn" style="background:#28a745" onclick="approve('${key}')">Approve</button></td></tr>`;
                 });
             }
@@ -182,18 +182,39 @@
             const title = document.getElementById('msg-title').value;
             const body = document.getElementById('msg-body').value;
             if(!title || !body) return alert("እባክህ ባዶ ቦታዎችን ሙላ!");
-            db.ref('notifications').push({ title, body, time: Date.now() })
-            .then(() => { alert("መልዕክቱ ተልኳል!"); document.getElementById('msg-title').value = ""; document.getElementById('msg-body').value = ""; });
+            db.ref('notifications').push({ title, body, time: Date.now() }).then(() => {
+                alert("መልዕክቱ ተልኳል!");
+                document.getElementById('msg-title').value = ""; document.getElementById('msg-body').value = "";
+            });
         }
 
+        // Load & Save Settings
+        db.ref('system').on('value', (snap) => {
+            const s = snap.val();
+            if(s) {
+                document.getElementById('ton-wallet').value = s.tonWallet || "";
+                document.getElementById('setting-limit').value = s.dailyLimit || 300;
+            }
+        });
+
         function saveSettings() {
+            const wallet = document.getElementById('ton-wallet').value;
             const limit = document.getElementById('setting-limit').value;
-            db.ref('system/dailyLimit').set(parseInt(limit)).then(() => alert("ተቀምጧል!"));
+            db.ref('system').update({ tonWallet: wallet, dailyLimit: parseInt(limit) })
+            .then(() => alert("መረጃው በትክክል ተቀምጧል!"));
         }
 
         function editUser(uid) {
             let newBal = prompt("አዲሱን ባላንስ ያስገቡ:");
             if(newBal) db.ref('users/' + uid).update({ balance: parseFloat(newBal) });
+        }
+
+        function searchUser() {
+            let input = document.getElementById('userSearch').value.toLowerCase();
+            let rows = document.getElementById('all-users-list').getElementsByTagName('tr');
+            for (let row of rows) {
+                row.style.display = row.innerText.toLowerCase().includes(input) ? "" : "none";
+            }
         }
     </script>
 </body>
