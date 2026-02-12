@@ -57,7 +57,7 @@
             
             <div class="card">
                 <h3>Tasks</h3>
-                <button class="btn btn-task" onclick="window.open('https://t.me/EarnChannalebot', '_blank')">ቻናል ተቀላቀል</button>
+                <button class="btn btn-task" onclick="window.open('https://t.me/ethio_ads_58_bot', '_blank')">ቻናል ተቀላቀል</button>
                 <button class="btn" style="background:#4caf50;" onclick="verifyTask()">አረጋግጥ (0.50 ETB)</button>
             </div>
 
@@ -88,7 +88,7 @@
                 <h3>ጓደኞችን ይጋብዙ</h3>
                 <p style="font-size: 14px;">ለእያንዳንዱ ሰው 1.00 ETB ያግኙ።</p>
                 <div id="ref-link" style="background:#f0f0f0; padding:15px; border-radius:10px; font-size:12px; word-break: break-all; border: 1px dashed #ccc;">
-                    https://t.me/YourBot?start=user_id
+                    https://t.me/ethio_ads_58_bot?start=loading...
                 </div>
                 <button class="btn" style="margin-top:15px;" onclick="copyRef()">ሊንኩን ኮፒ አድርግ</button>
             </div>
@@ -99,7 +99,7 @@
         <div class="nav-item active" onclick="switchTab('tab-home', this)">Ads</div>
         <div class="nav-item" onclick="switchTab('tab-invite', this)">Invite</div>
         <div class="nav-item" onclick="switchTab('tab-wallet', this)">Wallet</div>
-        <div class="nav-item" onclick="window.open('https://t.me/EarnChannalebot', '_blank')">Bonus</div>
+        <div class="nav-item" onclick="window.open('https://t.me/ethio_ads_58_bot', '_blank')">Bonus</div>
     </div>
 
     <script>
@@ -107,7 +107,6 @@
         tg.expand();
         tg.headerColor = '#0088cc';
 
-        // --- Firebase Configuration (ቁልፎችህ ገብተዋል) ---
         const firebaseConfig = {
             apiKey: "AIzaSyCg7-ixJaGiJlpi6qav1dTQUmr3K7Ccrpo",
             authDomain: "ethiopia-ads-earn.firebaseapp.com",
@@ -124,7 +123,6 @@
 
         let user = { balance: 0, adsToday: 0, invites: 0, lastWithdrawDate: "", taskDone: false, lastResetDate: "" };
 
-        // Real-time Sync with Database
         db.ref('users/' + uid).on('value', (snap) => {
             if(snap.exists()) {
                 user = snap.val();
@@ -139,10 +137,10 @@
             document.getElementById('u-balance').innerText = user.balance.toFixed(2);
             document.getElementById('u-ads').innerText = user.adsToday + "/50";
             document.getElementById('u-inv').innerText = (user.invites || 0) + "/5";
-            document.getElementById('ref-link').innerText = "https://t.me/EarnChannalebot?start=" + uid;
+            // የሪፈራል ሊንክ ማስተካከያ እዚህ ጋር ተደርጓል
+            document.getElementById('ref-link').innerText = "https://t.me/ethio_ads_58_bot?start=" + uid;
         }
 
-        // 9:00 AM Reset Logic (3:00 AM Server Time)
         function checkDailyReset() {
             const now = new Date();
             const todayStr = now.toDateString();
@@ -150,7 +148,7 @@
                 user.adsToday = 0;
                 user.lastResetDate = todayStr;
                 db.ref('users/' + uid).update({ adsToday: 0, lastResetDate: todayStr });
-                db.ref('system/dailyTotalPaid').set(0); // System-wide reset
+                db.ref('system/dailyTotalPaid').set(0); 
             }
         }
 
